@@ -3,8 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PCKSDBV4');</script>
+<!-- End Google Tag Manager -->
+<meta name="facebook-domain-verification" content="x3mdskvask209m6cuxpnd6964lbzp1" />
 <title>Ao vivo</title>
 <meta name="robots" content="noindex,nofollow">
+<!-- Meta Pixel: adiado para depois do LCP via requestIdleCallback -->
+<script>
+(function () {
+  function loadPixel() {
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      }; if (!f._fbq) f._fbq = n;
+      n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s)
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '25723610987317406');
+    fbq('track', 'PageView');
+    fbq('track', 'ViewContent', { value: 397.00, currency: 'BRL' });
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadPixel, { timeout: 3000 });
+  } else {
+    window.addEventListener('load', loadPixel);
+  }
+})();
+</script>
 <style>
 /* ============================================================
    VSL YouTube Live clone — mobile only
@@ -126,9 +156,38 @@ body{
   border-top:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;}
 #footer .left{display:flex;align-items:center;gap:9px;flex:1;}
 #footer svg{width:20px;height:20px;}
+
+/* ---------- LEAD MODAL (captura antes do checkout) ---------- */
+.lead-modal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-family:'Roboto',-apple-system,sans-serif;}
+.lead-modal.is-open{display:flex;}
+.lead-modal__card{position:relative;width:100%;max-width:25rem;background:#141414;border:1px solid #2A2A2A;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:1.9rem 1.6rem 1.5rem;animation:leadPop 200ms ease;}
+@keyframes leadPop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.lead-modal__close{position:absolute;top:.6rem;right:.6rem;width:2rem;height:2rem;border:none;background:transparent;color:#6B6B6B;font-size:1.6rem;line-height:1;cursor:pointer;border-radius:50%;transition:all .2s ease;}
+.lead-modal__close:hover{background:#1F1F1F;color:#FAFAFA;}
+.lead-modal__title{font-weight:800;font-size:1.6rem;line-height:1.1;color:#FAFAFA;margin:0 0 .4rem;}
+.lead-modal__sub{font-size:.95rem;color:rgba(250,250,250,.62);margin:0 0 1.25rem;}
+.lead-field{margin-bottom:.85rem;}
+.lead-field label{display:block;font-size:.8rem;font-weight:600;color:rgba(250,250,250,.62);margin-bottom:.35rem;}
+.lead-field input{width:100%;font-size:1rem;padding:.8rem .9rem;border:1.5px solid #2A2A2A;border-radius:10px;background:#0A0A0A;color:#FAFAFA;min-height:52px;transition:border-color .2s ease;box-sizing:border-box;}
+.lead-field input::placeholder{color:#6B6B6B;}
+.lead-field input:focus{outline:none;border-color:#16A34A;background:#1A1A1A;}
+.lead-field input.is-invalid{border-color:#E5484D;}
+.lead-phone{display:flex;gap:.5rem;}
+.lead-phone__ddi{display:flex;align-items:center;padding:0 .85rem;font-size:1rem;font-weight:600;color:rgba(250,250,250,.62);border:1.5px solid #2A2A2A;border-radius:10px;background:#1A1A1A;white-space:nowrap;}
+.lead-phone input{flex:1;}
+.lead-modal__submit{width:100%;margin-top:.5rem;display:inline-block;background:#16A34A;color:#fff;font-weight:800;font-size:16px;text-align:center;padding:16px 24px;border:none;border-radius:8px;cursor:pointer;transition:background-color .2s ease;}
+.lead-modal__submit:hover:not(:disabled){background:#15803D;}
+.lead-modal__submit:disabled{background:#1f3a29;color:#6B6B6B;cursor:not-allowed;}
+.lead-modal__hint{margin:.7rem 0 0;font-size:.75rem;color:#6B6B6B;text-align:center;}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PCKSDBV4"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=25723610987317406&ev=PageView&noscript=1" alt="" /></noscript>
 
 <!-- ============ VÍDEO ============ -->
 <div id="video-wrap">
@@ -172,7 +231,7 @@ body{
 
   <!-- CTA sincronizado -->
   <div id="cta">
-    <a id="cta-link" href="#" target="_blank" rel="noopener"></a>
+    <a id="cta-link" href="#" rel="noopener"></a>
     <div class="sub" id="cta-sub"></div>
   </div>
 
@@ -192,20 +251,20 @@ body{
    ============================================================ */
 const CONFIG = {
   // --- VÍDEO (YouTube) ---
-  VIDEO_ID: "dQw4w9WgXcQ",      // ← ID do seu VSL no YouTube (a parte depois de v=)
+  VIDEO_ID: "1sRjnSiME5Y",      // ← ID do seu VSL no YouTube (a parte depois de v=)
   VIEWERS:  "7,9 mi",            // texto de espectadores exibido
 
   // --- CTA sincronizado com o tempo do vídeo ---
   CTA: {
-    time: 120,                                    // ← segundo em que o botão APARECE
-    text: "QUERO GARANTIR MINHA VAGA",            // ← texto do botão
-    sub:  "Vagas limitadas · oferta só nesta transmissão",
-    url:  "https://pay.hotmart.com/SEU_LINK"      // ← destino do botão
+    time: 480,                                    // ← segundo em que o botão APARECE (placeholder: 8min de 12:37 — confirmar)
+    text: "Quero cumprir o que Deus me chamou a fazer",  // ← texto do botão
+    sub:  "Acesso imediato · garantia de 7 dias",
+    url:  "https://pay.hotmart.com/P106391383D?off=2srrhbv4&checkoutMode=10"  // ← checkout Método Remiyah
   },
 
   // --- SUPER CHAT / GIFT MEMBERSHIPS (card verde, aparece 1x no tempo definido) ---
   SUPERCHAT: {
-    time: 95,                                     // ← segundo em que o card aparece
+    time: 450,                                    // ← segundo em que o card aparece (placeholder: ~30s antes do CTA — confirmar)
     name: "@ronikley.lopes",                      // quem enviou
     initials: "RL",
     text: "Enviou 10 assinaturas de presente"     // texto estilo "gift memberships"
@@ -406,6 +465,219 @@ $('#tap-sound').addEventListener('click',()=>{
   s.src="https://www.youtube.com/iframe_api";
   document.head.appendChild(s);
 })();
+</script>
+
+<!-- ============ TRACKING + HOTMART + MODAL (espelho do metodo-remiyah) ============ -->
+<!-- LEAD MODAL: captura nome/email/whatsapp antes do checkout -->
+<div class="lead-modal" id="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+  <div class="lead-modal__card">
+    <button type="button" class="lead-modal__close" id="lead-modal-close" aria-label="Fechar">&times;</button>
+    <h2 class="lead-modal__title" id="lead-modal-title">Falta só um passo</h2>
+    <p class="lead-modal__sub">Preencha seus dados para garantir seu acesso ao Método Remiyah.</p>
+    <form id="lead-form" novalidate>
+      <div class="lead-field">
+        <label for="lead-name">Nome completo</label>
+        <input type="text" id="lead-name" name="name" autocomplete="name" placeholder="Seu nome completo" required />
+      </div>
+      <div class="lead-field">
+        <label for="lead-email">E-mail</label>
+        <input type="email" id="lead-email" name="email" autocomplete="email" inputmode="email" placeholder="Insira seu melhor e-mail" required />
+      </div>
+      <div class="lead-field">
+        <label for="lead-phone">WhatsApp</label>
+        <div class="lead-phone">
+          <span class="lead-phone__ddi">+55</span>
+          <input type="tel" id="lead-phone" name="phone" autocomplete="tel-national" inputmode="numeric" placeholder="(00) 0 0000 0000" required />
+        </div>
+      </div>
+      <button type="submit" class="lead-modal__submit" id="lead-submit" disabled>
+        Quero garantir meu acesso
+      </button>
+      <p class="lead-modal__hint">Seus dados ficam seguros. Sem spam.</p>
+    </form>
+  </div>
+</div>
+
+<!-- Hotmart launcher -->
+<script id="hotmart_launcher_script">
+  (function () {
+    function loadHotmart() {
+      (function (l, a, u, n, c, h, e, r) {
+        l['HotmartLauncherObject'] = c; l[c] = l[c] || function () {
+          (l[c].q = l[c].q || []).push(arguments);
+        }; l[c].l = 1 * new Date();
+        h = a.createElement(u); e = a.getElementsByTagName(u)[0];
+        h.async = 1; h.src = 'https://launcher.hotmart.com/launcher.js';
+        e.parentNode.insertBefore(h, e);
+      })(window, document, 'script', 'https://launcher.hotmart.com/launcher.js', 'hot');
+      hot('account', 'be7aeb20-4303-3f6c-b0c3-3050352275ba');
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadHotmart, { timeout: 4000 });
+    } else {
+      window.addEventListener('load', loadHotmart);
+    }
+  })();
+</script>
+
+<!-- ORIGEM DAS VENDAS (UTM + sck): reescreve hrefs no load; injeta sck nos links Hotmart/Kiwify -->
+<script>
+  var currentUrl = window.location.href;
+  var url = new URL(currentUrl);
+  var pagePath = url.pathname.replace(/^\/|\/$/g, '');
+  var cleanReferrer = document.referrer ? document.referrer.replace(/^https?:\/\//, '') : '';
+  var utmSource = url.searchParams.get('utm_source') || cleanReferrer || 'Direto';
+  var utmMedium = url.searchParams.get('utm_medium') || 'Organico';
+  var utmCampaign = url.searchParams.get('utm_campaign') || 'Direto';
+  var utmContent = url.searchParams.get('utm_content') || pagePath || 'Home';
+  var utmTerm = url.searchParams.get('utm_term') || '';
+  var links = document.querySelectorAll('a');
+  for (var i = 0; i < links.length; i++) {
+    if (!links[i].hasAttribute('popup')) {
+      var destinationUrl = links[i].href;
+      if (!destinationUrl.includes('#')) {
+        var hasUtmParams = destinationUrl.includes('utm_source') ||
+          destinationUrl.includes('utm_medium') ||
+          destinationUrl.includes('utm_campaign') ||
+          destinationUrl.includes('utm_content') ||
+          destinationUrl.includes('utm_term');
+        if (!hasUtmParams) {
+          destinationUrl += (destinationUrl.indexOf('?') === -1 ? '?' : '&');
+          destinationUrl += 'utm_source=' + utmSource;
+          destinationUrl += '&utm_medium=' + utmMedium;
+          destinationUrl += '&utm_campaign=' + utmCampaign;
+          destinationUrl += '&utm_content=' + utmContent;
+          destinationUrl += '&utm_term=' + utmTerm;
+          if (destinationUrl.includes('pay.hotmart') || destinationUrl.includes('pay.kiwify')) {
+            var sckValue = (utmContent || utmCampaign || pagePath || 'Home')
+              .replace(/[\/_]/g, '-')
+              .replace(/-+$/, '')
+              .slice(0, 30);
+            destinationUrl += '&sck=' + encodeURIComponent(sckValue);
+          }
+          links[i].href = destinationUrl;
+        }
+      }
+    }
+  }
+</script>
+
+<!-- MODAL + Pixel Lead + CAPI (Supabase capture-lead). Roda apos UTM/sck pra ler o href ja decorado -->
+<script>
+  (function () {
+    var EDGE_URL = 'https://iodseuinjheacuoptaau.supabase.co/functions/v1/capture-lead';
+    var PIXEL_ID = '25723610987317406';
+    var VALUE = 397.00, CURRENCY = 'BRL';
+    var FALLBACK_CHECKOUT = 'https://pay.hotmart.com/P106391383D?off=2srrhbv4&checkoutMode=10';
+
+    var modal = document.getElementById('lead-modal');
+    var form = document.getElementById('lead-form');
+    var elName = document.getElementById('lead-name');
+    var elEmail = document.getElementById('lead-email');
+    var elPhone = document.getElementById('lead-phone');
+    var elSubmit = document.getElementById('lead-submit');
+    var elClose = document.getElementById('lead-modal-close');
+    var checkoutHref = null;
+    var submitting = false;
+
+    function getCookie(name) {
+      var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? m.pop() : '';
+    }
+    function getParam(name) {
+      return new URLSearchParams(window.location.search).get(name) || '';
+    }
+    function digits(s) { return (s || '').replace(/\D/g, ''); }
+    function emailOk(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()); }
+    function nameOk(v) { return v.trim().split(/\s+/).filter(Boolean).length >= 2; }
+    function phoneOk(v) { var d = digits(v); return d.length >= 10 && d.length <= 11; }
+
+    function validate() {
+      var ok = nameOk(elName.value) && emailOk(elEmail.value) && phoneOk(elPhone.value);
+      elSubmit.disabled = !ok;
+      return ok;
+    }
+    [elName, elEmail, elPhone].forEach(function (el) {
+      el.addEventListener('input', validate);
+    });
+
+    function openModal(href) {
+      checkoutHref = href;
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () { elName.focus(); }, 50);
+    }
+    function closeModal() {
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href*="pay.hotmart"]');
+      if (!a) return;
+      e.preventDefault();
+      openModal(a.href);
+    });
+
+    elClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (submitting || !validate()) return;
+      submitting = true;
+      elSubmit.disabled = true;
+      elSubmit.textContent = 'Aguarde...';
+
+      var fullName = elName.value.trim().replace(/\s+/g, ' ');
+      var parts = fullName.split(' ');
+      var firstName = (parts[0] || '').toLowerCase();
+      var lastName = parts.slice(1).join(' ').toLowerCase();
+      var email = elEmail.value.trim().toLowerCase();
+      var phone = '55' + digits(elPhone.value);
+
+      var eventId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : 'lead-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+
+      var fbp = getCookie('_fbp');
+      var fbc = getCookie('_fbc');
+      if (!fbc) {
+        var fbclid = getParam('fbclid');
+        if (fbclid) fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+      }
+
+      if (window.fbq) {
+        fbq('init', PIXEL_ID, { em: email, ph: phone, fn: firstName, ln: lastName, external_id: email });
+        fbq('track', 'Lead', { value: VALUE, currency: CURRENCY }, { eventID: eventId });
+      }
+
+      var payload = {
+        product: 'metodo-remiyah',
+        value: VALUE, currency: CURRENCY,
+        full_name: fullName, first_name: firstName, last_name: lastName,
+        email: email, phone: phone,
+        utm_source: getParam('utm_source'), utm_medium: getParam('utm_medium'),
+        utm_campaign: getParam('utm_campaign'), utm_content: getParam('utm_content'),
+        utm_term: getParam('utm_term'),
+        sck: (function () { var m = (checkoutHref || '').match(/[?&]sck=([^&]+)/); return m ? decodeURIComponent(m[1]) : ''; })(),
+        fbp: fbp, fbc: fbc,
+        page_path: window.location.pathname,
+        event_id: eventId,
+        event_source_url: window.location.href
+      };
+      try {
+        fetch(EDGE_URL, {
+          method: 'POST', keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(function () {});
+      } catch (err) {}
+
+      var dest = checkoutHref || FALLBACK_CHECKOUT;
+      setTimeout(function () { window.location.href = dest; }, 250);
+    });
+  })();
 </script>
 </body>
 </html>
