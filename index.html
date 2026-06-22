@@ -290,13 +290,13 @@ const CONFIG = {
      ============================================================ */
   MESSAGES: [
     {name:"@marina.alves", color:"gray", text:"comecei essa semana e já vi diferença 👏"},
-    {name:"@rodrigo_fit", color:"blue", member:true, text:"melhor decisão que tomei esse ano, sério"},
+    {name:"@rodrigo_fit", color:"blue", member:true, avatar:"assets/depo-clerinton.avif", text:"melhor decisão que tomei esse ano, sério"},
     {name:"@ju.oliveira", color:"green", text:"alguém mais começou hoje?? 🙋‍♀️"},
-    {name:"@thiago.ramos", color:"gray", text:"o passo 2 sozinho já valeu o investimento"},
-    {name:"@bia_santos", color:"purple", member:true, text:"eu tava super cética mas funcionou demais 😭"},
-    {name:"@pedrohenrique", color:"gray", text:"tô aplicando faz 3 semanas, virou outro nível"},
+    {name:"@thiago.ramos", color:"gray", avatar:"assets/depo-emocionado.avif", text:"o passo 2 sozinho já valeu o investimento"},
+    {name:"@bia_santos", color:"purple", member:true, avatar:"assets/depo-gabriela.avif", text:"eu tava super cética mas funcionou demais 😭"},
+    {name:"@pedrohenrique", color:"gray", avatar:"assets/depo-pedro.avif", text:"tô aplicando faz 3 semanas, virou outro nível"},
     {name:"@carol.lima", color:"orange", text:"gente o suporte responde MUITO rápido"},
-    {name:"@lucas_dev", color:"blue", text:"comprei ontem e já tô na metade do módulo 1 kkkk"},
+    {name:"@lucas_dev", color:"blue", avatar:"assets/depo-lucas.avif", text:"comprei ontem e já tô na metade do módulo 1 kkkk"},
     {name:"@fernanda.m", color:"gray", member:true, text:"recomendo de olhos fechados 🔥🔥"},
     {name:"@gabriel.souza", color:"green", text:"isso aqui devia custar 10x mais"},
     {name:"@aline_costa", color:"gray", text:"finalmente um método que não enrola"},
@@ -304,17 +304,17 @@ const CONFIG = {
     {name:"@patricia.dias", color:"gray", member:true, text:"meu marido tá impressionado com o resultado 😅"},
     {name:"@vinicius_p", color:"blue", text:"a aula de hoje destruiu, anota tudo galera"},
     {name:"@larissa.f", color:"orange", text:"valeu cada centavo, sem exagero"},
-    {name:"@bruno.martins", color:"gray", text:"quem tá em dúvida: corre que vale"},
+    {name:"@bruno.martins", color:"gray", avatar:"assets/depo-chef-bruno.avif", text:"quem tá em dúvida: corre que vale"},
     {name:"@renata_silva", color:"green", member:true, text:"em 2 semanas mudou minha rotina inteira ✨"},
-    {name:"@diego.almeida", color:"gray", text:"o material é absurdo de bom"},
-    {name:"@camila.nunes", color:"purple", text:"tava precisando disso há anos 🙏"},
+    {name:"@diego.almeida", color:"gray", avatar:"assets/depo-pablo.avif", text:"o material é absurdo de bom"},
+    {name:"@camila.nunes", color:"purple", avatar:"assets/depo-camila.avif", text:"tava precisando disso há anos 🙏"},
     {name:"@felipe_oliv", color:"blue", text:"já indiquei pra 3 amigos"},
     {name:"@sabrina.l", color:"gray", member:true, text:"resultado mais rápido do que eu esperava"},
     {name:"@andre.gomes", color:"gray", text:"melhor que cursos de mil reais que já fiz"},
     {name:"@tatiane_r", color:"orange", text:"to chocada com a qualidade 😱"},
     {name:"@rafael.melo", color:"green", text:"método simples e que REALMENTE funciona"},
     {name:"@priscila.b", color:"gray", member:true, text:"obrigada por mudar minha vida 🙏❤️"},
-    {name:"@gustavo_h", color:"blue", text:"aplica que funciona, é isso"},
+    {name:"@gustavo_h", color:"blue", avatar:"assets/depo-everton.avif", text:"aplica que funciona, é isso"},
     {name:"@nathalia.s", color:"gray", text:"nunca vi um suporte tão atencioso"},
     {name:"@leandro.p", color:"purple", text:"valeu MUITO a pena, recomendo demais"},
     {name:"@vanessa_m", color:"gray", member:true, text:"to no módulo 3 e cada aula melhor que a outra"},
@@ -370,8 +370,11 @@ function appendMessage(m){
   const el = document.createElement('div');
   el.className='msg';
   const col = avFor(m.name);
+  const av = m.avatar
+    ? `<div class="av"><img src="${m.avatar}" alt="" loading="lazy"></div>`
+    : `<div class="av" style="background:${col}">${initials(m.name)}</div>`;
   el.innerHTML =
-    `<div class="av" style="background:${col}">${initials(m.name)}</div>`+
+    av+
     `<div class="body">${m.member?memberBadge():''}<span class="name ${m.color||'gray'}">${m.name}</span>${m.text}</div>`;
   msgsEl.appendChild(el);
   // mantém o DOM enxuto
