@@ -1,0 +1,12 @@
+# fontes / prints (não publicar)
+*.PNG
+superchat
+superchat.png
+youtube.PNG
+
+# sistema
+.DS_Store
+
+# claude
+.claude/
+CLAUDE.md

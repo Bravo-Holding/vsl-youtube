@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Ao vivo</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* ============================================================
+   VSL YouTube Live clone — mobile only
+   ============================================================ */
+:root{
+  --yt-red:#FF0000;
+  --bg:#fff;
+  --txt:#0f0f0f;
+  --muted:#606060;
+  --line:#e5e5e5;
+  --green:#2ba640;
+  --green-d:#1f8a33;
+  --blue:#1565c0;
+  --purple:#8e24aa;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:#000;}
+body{
+  font-family:"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--txt);
+  display:flex;flex-direction:column;height:100dvh;overflow:hidden;
+}
+
+/* ---------- VIDEO ---------- */
+#video-wrap{position:relative;width:100%;background:#000;aspect-ratio:16/9;flex:0 0 auto;}
+#player,#player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+/* bloqueia interação com o player (VSL travado) */
+#video-lock{position:absolute;inset:0;z-index:5;background:transparent;}
+/* ícones cosméticos canto sup. direito */
+#video-badges{position:absolute;top:8px;right:8px;z-index:6;display:flex;gap:10px;align-items:center;pointer-events:none;}
+#video-badges .live-dot{display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.55);padding:3px 7px;border-radius:4px;color:#fff;font-size:11px;font-weight:700;}
+#video-badges .live-dot i{width:7px;height:7px;border-radius:50%;background:var(--yt-red);display:inline-block;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+#video-badges svg{width:22px;height:22px;filter:drop-shadow(0 0 2px rgba(0,0,0,.6));}
+
+/* overlay tap-to-sound */
+#tap-sound{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;cursor:pointer;
+  background:rgba(0,0,0,.45);color:#fff;text-align:center;}
+#tap-sound .ico{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;}
+#tap-sound .ico svg{width:34px;height:34px;}
+#tap-sound p{margin:0;font-size:15px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+#tap-sound.hide{display:none;}
+
+/* ---------- CHAT ---------- */
+#chat{flex:1 1 auto;background:var(--bg);display:flex;flex-direction:column;min-height:0;
+  border-top-left-radius:14px;border-top-right-radius:14px;margin-top:-12px;position:relative;z-index:2;}
+
+#chat-head{padding:12px 14px 8px;border-bottom:1px solid var(--line);flex:0 0 auto;}
+#chat-head .row1{display:flex;align-items:center;justify-content:space-between;}
+#chat-head .row1 .title{font-size:16px;font-weight:600;}
+#chat-head .row1 .acts{display:flex;align-items:center;gap:14px;}
+#chat-head .xp{background:#f2f2f2;border-radius:20px;padding:3px 9px;font-size:12px;font-weight:600;
+  color:var(--purple);display:flex;align-items:center;gap:4px;}
+#chat-head .xp svg{width:14px;height:14px;}
+#chat-head .acts svg{width:22px;height:22px;color:#0f0f0f;}
+#chat-head .row2{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--muted);font-size:13px;}
+#chat-head .row2 .dot{margin:0 2px;}
+#chat-head .row2 svg{width:14px;height:14px;}
+
+/* member chips */
+#chips{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;flex:0 0 auto;
+  border-bottom:1px solid var(--line);scrollbar-width:none;}
+#chips::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;display:flex;align-items:center;gap:6px;background:var(--green);
+  color:#fff;border-radius:20px;padding:5px 12px 5px 5px;font-size:13px;font-weight:600;}
+.chip img,.chip .av{width:22px;height:22px;border-radius:50%;object-fit:cover;}
+
+/* messages */
+#msgs{flex:1 1 auto;overflow-y:auto;padding:8px 12px 4px;scrollbar-width:none;}
+#msgs::-webkit-scrollbar{display:none;}
+.msg{display:flex;gap:9px;padding:6px 2px;align-items:flex-start;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg .av{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;
+  align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;overflow:hidden;}
+.msg .av img{width:100%;height:100%;object-fit:cover;}
+.msg .body{font-size:13.5px;line-height:1.35;color:#0f0f0f;word-break:break-word;}
+.msg .body .badge{display:inline-flex;vertical-align:middle;margin-right:4px;}
+.msg .body .badge svg{width:14px;height:14px;}
+.msg .body .name{font-weight:600;margin-right:6px;font-size:13px;}
+.msg .body .name.gray{color:#5f6368;}
+.msg .body .name.blue{color:#1565c0;}
+.msg .body .name.green{color:#1f8a33;}
+.msg .body .name.purple{color:#8e24aa;}
+.msg .body .name.orange{color:#e65100;}
+
+/* super chat — card verde de gift memberships */
+.superchat{position:relative;margin:8px 2px;border-radius:12px;overflow:hidden;
+  background:#1f9d39;background:linear-gradient(135deg,#1faa3c,#178a31);
+  box-shadow:0 2px 10px rgba(0,0,0,.18);animation:scin .45s ease;}
+@keyframes scin{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.superchat .sc-content{position:relative;z-index:2;padding:11px 90px 13px 12px;}
+.superchat .sc-top{display:flex;align-items:center;gap:9px;}
+.superchat .sc-top .av{width:28px;height:28px;border-radius:50%;flex:0 0 auto;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.25);
+  color:#fff;font-weight:700;font-size:12px;}
+.superchat .sc-top .av img{width:100%;height:100%;object-fit:cover;}
+.superchat .sc-top .nm{font-weight:700;font-size:13.5px;color:#fff;}
+.superchat .sc-text{margin-top:7px;font-size:14px;font-weight:600;line-height:1.35;color:#fff;}
+.superchat .sc-gift{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:78px;height:78px;z-index:1;opacity:.95;}
+
+/* CTA */
+#cta{flex:0 0 auto;padding:10px 12px;border-top:1px solid var(--line);background:#fff;
+  display:none;animation:ctain .4s ease;}
+#cta.show{display:block;}
+@keyframes ctain{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#cta a{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+  background:var(--green);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:10px;
+  box-shadow:0 4px 0 var(--green-d);text-transform:uppercase;letter-spacing:.3px;
+  animation:ctapulse 1.6s ease-in-out infinite;}
+@keyframes ctapulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+#cta a:active{transform:translateY(2px);box-shadow:0 2px 0 var(--green-d);}
+#cta .sub{text-align:center;font-size:12px;color:var(--muted);margin-top:7px;}
+
+/* footer subscribers-only */
+#footer{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:11px 14px;
+  border-top:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;}
+#footer .left{display:flex;align-items:center;gap:9px;flex:1;}
+#footer svg{width:20px;height:20px;}
+</style>
+</head>
+<body>
+
+<!-- ============ VÍDEO ============ -->
+<div id="video-wrap">
+  <div id="player"></div>
+  <div id="video-lock"></div>
+  <div id="video-badges">
+    <span class="live-dot"><i></i>AO VIVO</span>
+    <svg viewBox="0 0 24 24" fill="#fff"><path d="M21 6H3a1 1 0 00-1 1v10a1 1 0 001 1h18a1 1 0 001-1V7a1 1 0 00-1-1zm-11 9V9l5 3-5 3z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="#FF0000" d="M21.6 7.2s-.2-1.4-.8-2c-.7-.8-1.6-.8-2-.9C16 4 12 4 12 4s-4 0-6.8.3c-.4 0-1.3.1-2 .9-.6.6-.8 2-.8 2S2 8.8 2 10.5v1.4C2 13.6 2.4 15.3 2.4 15.3s.2 1.4.8 2c.7.8 1.7.8 2.1.9C7 18.4 12 18.4 12 18.4s4 0 6.8-.3c.4 0 1.3-.1 2-.9.6-.6.8-2 .8-2s.4-1.7.4-3.4v-1.4c0-1.7-.4-3.2-.4-3.2z"/><path fill="#fff" d="M10 14.5l5-3-5-3z"/></svg>
+  </div>
+  <div id="tap-sound">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 00-2.5-4v8a4.5 4.5 0 002.5-4z"/></svg>
+    </div>
+    <p>Toque para ativar o som 🔊</p>
+  </div>
+</div>
+
+<!-- ============ CHAT ============ -->
+<div id="chat">
+  <div id="chat-head">
+    <div class="row1">
+      <span class="title">Chat ao vivo</span>
+      <div class="acts">
+        <span class="xp">
+          <svg viewBox="0 0 24 24" fill="#8e24aa"><path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 15.5 7.1 17.2 8 11.7 4 7.8 9.5 7z"/></svg>0 XP
+        </span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f0f0f" stroke-width="2"><line x1="4" y1="8" x2="20" y2="8"/><circle cx="9" cy="8" r="2" fill="#fff"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="15" cy="16" r="2" fill="#fff"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f0f0f" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="row2">
+      <span>Principais mensagens</span><span class="dot">·</span>
+      <svg viewBox="0 0 24 24" fill="#606060"><path d="M12 5c-5 0-9 4-10 7 1 3 5 7 10 7s9-4 10-7c-1-3-5-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8z"/></svg>
+      <span id="viewers">7,9 mi</span>
+    </div>
+  </div>
+
+  <div id="chips"></div>
+  <div id="msgs"></div>
+
+  <!-- CTA sincronizado -->
+  <div id="cta">
+    <a id="cta-link" href="#" target="_blank" rel="noopener"></a>
+    <div class="sub" id="cta-sub"></div>
+  </div>
+
+  <div id="footer">
+    <div class="left">
+      <svg viewBox="0 0 24 24" fill="#606060"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      <span>Modo somente para inscritos</span>
+    </div>
+    <svg viewBox="0 0 24 24" fill="#606060"><path d="M11.8 11c-1.9-.5-2.5-1-2.5-1.8 0-.9.8-1.5 2.2-1.5 1.5 0 2 .7 2.1 1.7h1.8c-.1-1.4-.9-2.6-2.6-3V4.5h-2.4V6.4c-1.6.3-2.8 1.4-2.8 2.9 0 1.9 1.5 2.8 3.8 3.3 2 .5 2.4 1.2 2.4 1.9 0 .6-.4 1.5-2.2 1.5-1.6 0-2.3-.7-2.4-1.7H7.1c.1 1.7 1.4 2.7 2.9 3v1.9h2.4v-1.8c1.6-.3 2.9-1.3 2.9-2.9 0-2.3-2-3.1-3.5-3.5z"/></svg>
+  </div>
+</div>
+
+<!-- ============ CONFIG + LÓGICA ============ -->
+<script>
+/* ============================================================
+   ⚙️  CONFIG — edite só este bloco
+   ============================================================ */
+const CONFIG = {
+  // --- VÍDEO (YouTube) ---
+  VIDEO_ID: "dQw4w9WgXcQ",      // ← ID do seu VSL no YouTube (a parte depois de v=)
+  VIEWERS:  "7,9 mi",            // texto de espectadores exibido
+
+  // --- CTA sincronizado com o tempo do vídeo ---
+  CTA: {
+    time: 120,                                    // ← segundo em que o botão APARECE
+    text: "QUERO GARANTIR MINHA VAGA",            // ← texto do botão
+    sub:  "Vagas limitadas · oferta só nesta transmissão",
+    url:  "https://pay.hotmart.com/SEU_LINK"      // ← destino do botão
+  },
+
+  // --- SUPER CHAT / GIFT MEMBERSHIPS (card verde, aparece 1x no tempo definido) ---
+  SUPERCHAT: {
+    time: 95,                                     // ← segundo em que o card aparece
+    name: "@ronikley.lopes",                      // quem enviou
+    initials: "RL",
+    text: "Enviou 10 assinaturas de presente"     // texto estilo "gift memberships"
+  },
+
+  // --- RITMO DO CHAT ---
+  CHAT: {
+    minDelay: 1500,   // ms mínimo entre mensagens
+    maxDelay: 3800,   // ms máximo entre mensagens
+    loop: true        // recomeça as mensagens quando acaba a lista
+  },
+
+  // --- CHIPS de membros (topo) ---
+  CHIPS: ["Membro","Membro","Membro","Membro"],
+
+  /* ============================================================
+     MENSAGENS DO CHAT (provas sociais)
+     - name: nome exibido
+     - color: gray|blue|green|purple|orange
+     - member: true mostra selo de membro
+     - text: mensagem (pode ter emoji)
+     Substitua/edite à vontade. Adicione os depoimentos reais aqui.
+     ============================================================ */
+  MESSAGES: [
+    {name:"@marina.alves", color:"gray", text:"comecei essa semana e já vi diferença 👏"},
+    {name:"@rodrigo_fit", color:"blue", member:true, text:"melhor decisão que tomei esse ano, sério"},
+    {name:"@ju.oliveira", color:"green", text:"alguém mais começou hoje?? 🙋‍♀️"},
+    {name:"@thiago.ramos", color:"gray", text:"o passo 2 sozinho já valeu o investimento"},
+    {name:"@bia_santos", color:"purple", member:true, text:"eu tava super cética mas funcionou demais 😭"},
+    {name:"@pedrohenrique", color:"gray", text:"tô aplicando faz 3 semanas, virou outro nível"},
+    {name:"@carol.lima", color:"orange", text:"gente o suporte responde MUITO rápido"},
+    {name:"@lucas_dev", color:"blue", text:"comprei ontem e já tô na metade do módulo 1 kkkk"},
+    {name:"@fernanda.m", color:"gray", member:true, text:"recomendo de olhos fechados 🔥🔥"},
+    {name:"@gabriel.souza", color:"green", text:"isso aqui devia custar 10x mais"},
+    {name:"@aline_costa", color:"gray", text:"finalmente um método que não enrola"},
+    {name:"@matheus.rocha", color:"purple", text:"primeira vez que termino um curso até o final"},
+    {name:"@patricia.dias", color:"gray", member:true, text:"meu marido tá impressionado com o resultado 😅"},
+    {name:"@vinicius_p", color:"blue", text:"a aula de hoje destruiu, anota tudo galera"},
+    {name:"@larissa.f", color:"orange", text:"valeu cada centavo, sem exagero"},
+    {name:"@bruno.martins", color:"gray", text:"quem tá em dúvida: corre que vale"},
+    {name:"@renata_silva", color:"green", member:true, text:"em 2 semanas mudou minha rotina inteira ✨"},
+    {name:"@diego.almeida", color:"gray", text:"o material é absurdo de bom"},
+    {name:"@camila.nunes", color:"purple", text:"tava precisando disso há anos 🙏"},
+    {name:"@felipe_oliv", color:"blue", text:"já indiquei pra 3 amigos"},
+    {name:"@sabrina.l", color:"gray", member:true, text:"resultado mais rápido do que eu esperava"},
+    {name:"@andre.gomes", color:"gray", text:"melhor que cursos de mil reais que já fiz"},
+    {name:"@tatiane_r", color:"orange", text:"to chocada com a qualidade 😱"},
+    {name:"@rafael.melo", color:"green", text:"método simples e que REALMENTE funciona"},
+    {name:"@priscila.b", color:"gray", member:true, text:"obrigada por mudar minha vida 🙏❤️"},
+    {name:"@gustavo_h", color:"blue", text:"aplica que funciona, é isso"},
+    {name:"@nathalia.s", color:"gray", text:"nunca vi um suporte tão atencioso"},
+    {name:"@leandro.p", color:"purple", text:"valeu MUITO a pena, recomendo demais"},
+    {name:"@vanessa_m", color:"gray", member:true, text:"to no módulo 3 e cada aula melhor que a outra"},
+    {name:"@igor.santos", color:"orange", text:"comprei agora durante a live kkk não resisti"},
+    {name:"@amanda.lima", color:"green", text:"gente é real, funciona mesmo 😭🙌"},
+    {name:"@marcelo_r", color:"gray", text:"tava perdido, agora tenho um caminho claro"},
+    {name:"@juliana.c", color:"blue", member:true, text:"melhor investimento da minha vida"},
+    {name:"@henrique.f", color:"gray", text:"resultado em menos de um mês, impressionante"},
+    {name:"@daniela_o", color:"purple", text:"não acreditava mas tô vivendo a transformação"},
+    {name:"@rogerio.s", color:"gray", text:"vale cada minuto assistido"},
+    {name:"@kelly_alves", color:"orange", member:true, text:"meu único arrependimento é não ter feito antes 😢"},
+    {name:"@eduardo.m", color:"green", text:"conteúdo direto ao ponto, sem enrolação 👏"},
+    {name:"@simone.r", color:"gray", text:"alguém sabe se ainda dá tempo de garantir??"},
+    {name:"@paulo_vit", color:"blue", text:"corre que tá acabando as vagas 🏃‍♂️"}
+  ]
+};
+
+/* ============================================================
+   Implementação — não precisa editar abaixo
+   ============================================================ */
+
+/* ---- util ---- */
+const $ = s => document.querySelector(s);
+const avColors = ["#e57373","#64b5f6","#81c784","#ba68c8","#ffb74d","#4db6ac","#f06292","#9575cd","#7986cb","#a1887f"];
+function initials(name){
+  const n = name.replace(/^@/,'').replace(/[._-]/g,' ').trim();
+  const parts = n.split(' ').filter(Boolean);
+  return ((parts[0]||'?')[0] + (parts[1]?parts[1][0]:'')).toUpperCase();
+}
+function avFor(name){
+  let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+  return avColors[h%avColors.length];
+}
+function memberBadge(){
+  return '<span class="badge"><svg viewBox="0 0 24 24" fill="#2ba640"><path d="M12 2l2.4 4.8 5.3.8-3.8 3.7.9 5.3L12 14.9 7.2 16.6l.9-5.3L4.3 7.6l5.3-.8z"/></svg></span>';
+}
+
+/* ---- viewers + chips ---- */
+$('#viewers').textContent = CONFIG.VIEWERS;
+const chipsEl = $('#chips');
+CONFIG.CHIPS.forEach(label=>{
+  const c=avColors[Math.floor((label.length*7)%avColors.length)];
+  const d=document.createElement('div');
+  d.className='chip';
+  d.innerHTML=`<span class="av" style="background:${c};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">${label[0]}</span>${label}`;
+  chipsEl.appendChild(d);
+});
+
+/* ---- chat loop ---- */
+const msgsEl = $('#msgs');
+let msgIndex = 0;
+function appendMessage(m){
+  const el = document.createElement('div');
+  el.className='msg';
+  const col = avFor(m.name);
+  el.innerHTML =
+    `<div class="av" style="background:${col}">${initials(m.name)}</div>`+
+    `<div class="body">${m.member?memberBadge():''}<span class="name ${m.color||'gray'}">${m.name}</span>${m.text}</div>`;
+  msgsEl.appendChild(el);
+  // mantém o DOM enxuto
+  while(msgsEl.children.length>60) msgsEl.removeChild(msgsEl.firstChild);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+function nextMessage(){
+  if(msgIndex>=CONFIG.MESSAGES.length){
+    if(!CONFIG.CHAT.loop) return;
+    msgIndex=0;
+  }
+  appendMessage(CONFIG.MESSAGES[msgIndex++]);
+  const d=CONFIG.CHAT.minDelay+Math.random()*(CONFIG.CHAT.maxDelay-CONFIG.CHAT.minDelay);
+  setTimeout(nextMessage,d);
+}
+// seed inicial pra não começar vazio
+for(let i=0;i<6 && i<CONFIG.MESSAGES.length;i++) appendMessage(CONFIG.MESSAGES[msgIndex++]);
+setTimeout(nextMessage,1500);
+
+/* ---- super chat (gift memberships verde) ---- */
+let superShown=false;
+const GIFT_SVG=
+  '<svg class="sc-gift" viewBox="0 0 64 64" fill="none">'+
+  '<path d="M14 6l4 7-7-2z" fill="#ffe082"/><path d="M52 10l-2 7 6-3z" fill="#ffe082"/>'+
+  '<path d="M48 22l3 5 5 1-4 4 1 5-5-3-5 3 1-5-4-4 5-1z" fill="#fff176"/>'+
+  '<rect x="14" y="30" width="34" height="26" rx="2" fill="#fff"/>'+
+  '<rect x="14" y="30" width="34" height="9" rx="2" fill="#e6f4ea"/>'+
+  '<rect x="28" y="30" width="6" height="26" fill="#c62828"/>'+
+  '<path d="M31 30c-6-10-14-4-9 0zM31 30c6-10 14-4 9 0z" fill="#e53935"/>'+
+  '<circle cx="31" cy="29" r="3" fill="#c62828"/>'+
+  '</svg>';
+function showSuperchat(){
+  if(superShown) return; superShown=true;
+  const sc=CONFIG.SUPERCHAT;
+  const el=document.createElement('div');
+  el.className='superchat';
+  el.innerHTML=
+    `<div class="sc-content">`+
+      `<div class="sc-top">`+
+        `<div class="av">${sc.avatar?`<img src="${sc.avatar}" alt="">`:(sc.initials||initials(sc.name))}</div>`+
+        `<span class="nm">${sc.name}</span>`+
+      `</div>`+
+      `<div class="sc-text">${sc.text} 🎁</div>`+
+    `</div>`+GIFT_SVG;
+  msgsEl.appendChild(el);
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
+/* ---- CTA ---- */
+let ctaShown=false;
+$('#cta-link').textContent=CONFIG.CTA.text;
+$('#cta-link').href=CONFIG.CTA.url;
+$('#cta-sub').textContent=CONFIG.CTA.sub||'';
+function showCTA(){
+  if(ctaShown) return; ctaShown=true;
+  $('#cta').classList.add('show');
+}
+
+/* ============================================================
+   YouTube IFrame API — player travado + sincronia por tempo
+   ============================================================ */
+let ytPlayer, syncTimer;
+function onYouTubeIframeAPIReady(){
+  ytPlayer = new YT.Player('player',{
+    videoId: CONFIG.VIDEO_ID,
+    playerVars:{
+      autoplay:1, mute:1, controls:0, rel:0, modestbranding:1,
+      playsinline:1, fs:0, disablekb:1, iv_load_policy:3
+    },
+    events:{ onReady:onReady }
+  });
+}
+function onReady(e){
+  e.target.mute();
+  e.target.playVideo();
+  syncTimer=setInterval(()=>{
+    if(!ytPlayer||!ytPlayer.getCurrentTime) return;
+    const t=ytPlayer.getCurrentTime();
+    if(t>=CONFIG.SUPERCHAT.time) showSuperchat();
+    if(t>=CONFIG.CTA.time) showCTA();
+  },300);
+}
+// tap para ativar som
+$('#tap-sound').addEventListener('click',()=>{
+  if(ytPlayer&&ytPlayer.unMute){ ytPlayer.unMute(); ytPlayer.setVolume(100); ytPlayer.playVideo(); }
+  $('#tap-sound').classList.add('hide');
+});
+// carrega a API
+(function(){
+  const s=document.createElement('script');
+  s.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
