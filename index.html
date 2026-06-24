@@ -508,6 +508,7 @@ function showCTA(){
    ============================================================ */
 let ytPlayer, syncTimer;
 function onYouTubeIframeAPIReady(){
+  if(ytPlayer) return; // evita player duplicado se a API carregar mais de uma vez
   ytPlayer = new YT.Player('player',{
     videoId: CONFIG.VIDEO_ID,
     playerVars:{
@@ -532,11 +533,34 @@ $('#tap-sound').addEventListener('click',()=>{
   if(ytPlayer&&ytPlayer.unMute){ ytPlayer.unMute(); ytPlayer.setVolume(100); ytPlayer.playVideo(); }
   $('#tap-sound').classList.add('hide');
 });
-// carrega a API
+// carrega a API com retry/backoff — se o iframe_api falhar (503 intermitente do
+// YouTube) sem isso o player nunca aparece (tela preta permanente).
 (function(){
-  const s=document.createElement('script');
-  s.src="https://www.youtube.com/iframe_api";
-  document.head.appendChild(s);
+  let tries=0; const MAX=6;
+  function loadAPI(){
+    tries++;
+    const old=document.getElementById('yt-api-script');
+    if(old) old.remove();
+    const s=document.createElement('script');
+    s.id='yt-api-script';
+    s.src="https://www.youtube.com/iframe_api?_="+tries; // cache-bust por tentativa
+    s.onerror=retry;
+    document.head.appendChild(s);
+  }
+  function retry(){
+    if(tries>=MAX) return;
+    setTimeout(loadAPI, Math.min(1000*Math.pow(2,tries-1), 8000)); // 1s,2s,4s,8s,8s
+  }
+  loadAPI();
+  // fallback: se YT nao carregou e o player nao foi criado, reinjeta a API
+  const guard=setInterval(()=>{
+    if(window.YT && window.YT.Player){
+      if(!ytPlayer) onYouTubeIframeAPIReady(); // API chegou mas callback perdido
+      clearInterval(guard); return;
+    }
+    if(tries<MAX) loadAPI();
+    else clearInterval(guard);
+  },5000);
 })();
 </script>
 
