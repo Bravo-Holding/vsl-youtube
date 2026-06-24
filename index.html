@@ -152,11 +152,12 @@ body{
 #cta a:active{transform:translateY(2px);box-shadow:0 2px 0 var(--green-d);}
 #cta .sub{text-align:center;font-size:12px;color:var(--muted);margin-top:7px;}
 
-/* footer subscribers-only */
-#footer{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:11px 14px;
-  border-top:1px solid var(--line);background:#fff;color:var(--muted);font-size:14px;}
-#footer .left{display:flex;align-items:center;gap:9px;flex:1;}
-#footer svg{width:20px;height:20px;}
+/* footer members-only — caixa cinza estilo YouTube */
+#footer{flex:0 0 auto;display:flex;align-items:flex-start;gap:11px;margin:10px 12px 12px;
+  padding:12px 14px;border-radius:12px;background:#f2f2f2;color:#606060;font-size:13px;line-height:1.45;}
+#footer svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px;}
+#footer .txt{flex:1;}
+#footer .more{display:block;margin-top:5px;color:#065fd4;font-weight:500;cursor:pointer;}
 
 /* ---------- LEAD MODAL (captura antes do checkout) ---------- */
 .lead-modal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-family:'Roboto',-apple-system,sans-serif;}
@@ -237,11 +238,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <div id="footer">
-    <div class="left">
-      <svg viewBox="0 0 24 24" fill="#606060"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-      <span>Modo somente para alunos</span>
-    </div>
-    <svg viewBox="0 0 24 24" fill="#606060"><path d="M11.8 11c-1.9-.5-2.5-1-2.5-1.8 0-.9.8-1.5 2.2-1.5 1.5 0 2 .7 2.1 1.7h1.8c-.1-1.4-.9-2.6-2.6-3V4.5h-2.4V6.4c-1.6.3-2.8 1.4-2.8 2.9 0 1.9 1.5 2.8 3.8 3.3 2 .5 2.4 1.2 2.4 1.9 0 .6-.4 1.5-2.2 1.5-1.6 0-2.3-.7-2.4-1.7H7.1c.1 1.7 1.4 2.7 2.9 3v1.9h2.4v-1.8c1.6-.3 2.9-1.3 2.9-2.9 0-2.3-2-3.1-3.5-3.5z"/></svg>
+    <svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23 7.5a3 3 0 00-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 001 7.5 31 31 0 00.5 12 31 31 0 001 16.5a3 3 0 002.1 2.1C5 19 12 19 12 19s7 0 8.9-.5a3 3 0 002.1-2.1A31 31 0 0023.5 12 31 31 0 0023 7.5z"/><path fill="#fff" d="M9.7 15.3V8.7l5.8 3.3z"/></svg>
+    <div class="txt">Modo exclusivo para membros. As mensagens que aparecem são de pessoas que entraram na comunidade Remiyah há 5 minutos ou mais.<span class="more">Saiba mais</span></div>
   </div>
 </div>
 
@@ -253,7 +251,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 const CONFIG = {
   // --- VÍDEO (YouTube) ---
   VIDEO_ID: "1sRjnSiME5Y",      // ← ID do seu VSL no YouTube (a parte depois de v=)
-  VIEWERS:  "7,9 mi",            // texto de espectadores exibido
+  VIEWERS:  "397 mil",           // texto de espectadores exibido
 
   // --- CTA sincronizado com o tempo do vídeo ---
   CTA: {
