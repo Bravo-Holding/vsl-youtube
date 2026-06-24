@@ -504,64 +504,43 @@ function showCTA(){
 }
 
 /* ============================================================
-   YouTube IFrame API — player travado + sincronia por tempo
+   Player travado — embed ESTÁTICO + sincronia por relógio
+   O bootstrap JS do YouTube (iframe_api) retorna 503 quando carregado
+   como script cross-site a partir de ebravoholding.com (bloqueio/throttle
+   do YouTube), deixando a tela preta. Então NÃO dependemos dele: usamos um
+   <iframe> de embed direto (toca garantido) + controle via postMessage +
+   sincronia por wall-clock (Date.now desde o load).
    ============================================================ */
-let ytPlayer, syncTimer;
-function onYouTubeIframeAPIReady(){
-  if(ytPlayer) return; // evita player duplicado se a API carregar mais de uma vez
-  ytPlayer = new YT.Player('player',{
-    videoId: CONFIG.VIDEO_ID,
-    playerVars:{
-      autoplay:1, mute:1, controls:0, rel:0, modestbranding:1,
-      playsinline:1, fs:0, disablekb:1, iv_load_policy:3
-    },
-    events:{ onReady:onReady }
-  });
+let syncTimer, startMs=0, ytIframe;
+(function buildPlayer(){
+  const params='autoplay=1&mute=1&controls=0&rel=0&modestbranding=1'+
+    '&playsinline=1&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1'+
+    '&origin='+encodeURIComponent(location.origin);
+  ytIframe=document.createElement('iframe');
+  ytIframe.id='ytframe';
+  ytIframe.allow='autoplay; encrypted-media; picture-in-picture';
+  ytIframe.setAttribute('allowfullscreen','');
+  ytIframe.src='https://www.youtube.com/embed/'+CONFIG.VIDEO_ID+'?'+params;
+  ytIframe.onload=()=>{ if(!startMs){ startMs=Date.now(); startSync(); ytCmd('playVideo'); } };
+  $('#player').appendChild(ytIframe);
+})();
+// controle do player via postMessage (não precisa do iframe_api JS)
+function ytCmd(func,args){
+  if(!ytIframe||!ytIframe.contentWindow) return;
+  ytIframe.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}),'*');
 }
-function onReady(e){
-  e.target.mute();
-  e.target.playVideo();
+function startSync(){
   syncTimer=setInterval(()=>{
-    if(!ytPlayer||!ytPlayer.getCurrentTime) return;
-    const t=ytPlayer.getCurrentTime();
+    const t=(Date.now()-startMs)/1000; // segundos desde o load do vídeo
     if(t>=CONFIG.SUPERCHAT.time) showSuperchat();
     if(t>=CONFIG.CTA.time) showCTA();
   },300);
 }
 // tap para ativar som
 $('#tap-sound').addEventListener('click',()=>{
-  if(ytPlayer&&ytPlayer.unMute){ ytPlayer.unMute(); ytPlayer.setVolume(100); ytPlayer.playVideo(); }
+  ytCmd('unMute'); ytCmd('setVolume',[100]); ytCmd('playVideo');
   $('#tap-sound').classList.add('hide');
 });
-// carrega a API com retry/backoff — se o iframe_api falhar (503 intermitente do
-// YouTube) sem isso o player nunca aparece (tela preta permanente).
-(function(){
-  let tries=0; const MAX=6;
-  function loadAPI(){
-    tries++;
-    const old=document.getElementById('yt-api-script');
-    if(old) old.remove();
-    const s=document.createElement('script');
-    s.id='yt-api-script';
-    s.src="https://www.youtube.com/iframe_api?_="+tries; // cache-bust por tentativa
-    s.onerror=retry;
-    document.head.appendChild(s);
-  }
-  function retry(){
-    if(tries>=MAX) return;
-    setTimeout(loadAPI, Math.min(1000*Math.pow(2,tries-1), 8000)); // 1s,2s,4s,8s,8s
-  }
-  loadAPI();
-  // fallback: se YT nao carregou e o player nao foi criado, reinjeta a API
-  const guard=setInterval(()=>{
-    if(window.YT && window.YT.Player){
-      if(!ytPlayer) onYouTubeIframeAPIReady(); // API chegou mas callback perdido
-      clearInterval(guard); return;
-    }
-    if(tries<MAX) loadAPI();
-    else clearInterval(guard);
-  },5000);
-})();
 </script>
 
 <!-- ============ TRACKING + HOTMART + MODAL (espelho do metodo-remiyah) ============ -->
