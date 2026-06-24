@@ -4,6 +4,7 @@ deployment:
     - export DEPLOYPATH="$HOME/ebravoholding.com/pages/vsl-remiyah/"
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R index.html $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH
     - /bin/mkdir -p $DEPLOYPATH/assets
     - /bin/cp assets/*.avif $DEPLOYPATH/assets/
     - /bin/cp assets/favicon-youtube.png $DEPLOYPATH/assets/
