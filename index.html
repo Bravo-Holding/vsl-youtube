@@ -154,7 +154,9 @@ body{
 
 /* footer members-only — caixa cinza estilo YouTube */
 #footer{flex:0 0 auto;display:flex;align-items:flex-start;gap:11px;margin:10px 12px 12px;
-  padding:12px 14px;border-radius:12px;background:#f2f2f2;color:#606060;font-size:13px;line-height:1.45;}
+  padding:12px 14px;border-radius:12px;background:#f2f2f2;color:#606060;font-size:13px;line-height:1.45;
+  transition:opacity .4s ease;}
+#footer.hide{opacity:0;}
 #footer svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px;}
 #footer .txt{flex:1;}
 #footer .more{display:block;margin-top:5px;color:#065fd4;font-weight:500;cursor:pointer;}
@@ -368,6 +370,13 @@ function memberBadge(){
 
 /* ---- viewers + chips ---- */
 $('#viewers').textContent = CONFIG.VIEWERS;
+
+/* esconde a caixa "Modo exclusivo" depois de 1 min */
+setTimeout(()=>{
+  const f=$('#footer'); if(!f) return;
+  f.classList.add('hide');
+  setTimeout(()=>f.remove(), 400);
+}, 60000);
 const chipsEl = $('#chips');
 CONFIG.CHIPS.forEach(item=>{
   const name = typeof item === 'string' ? item : item.name;
