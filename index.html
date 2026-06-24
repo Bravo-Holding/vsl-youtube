@@ -279,7 +279,12 @@ const CONFIG = {
   },
 
   // --- CHIPS de membros (topo) ---
-  CHIPS: ["Membro","Membro","Membro","Membro"],
+  CHIPS: [
+    {name:"Pedro",     avatar:"assets/aluno-pedro-ribeiro.avif"},
+    {name:"Camila",    avatar:"assets/aluno-camila-souza.avif"},
+    {name:"Maristela", avatar:"assets/aluno-maristela-silva.avif"},
+    {name:"Ewertton",  avatar:"assets/aluno-ewertton.avif"}
+  ],
 
   /* ============================================================
      MENSAGENS DO CHAT (provas sociais)
@@ -301,7 +306,7 @@ const CONFIG = {
     {name:"@luciana.f", color:"gray", text:"se você termina o dia cansado e ainda achando que devia ter feito mais, vale assistir até o final"},
     {name:"@diego.araujo", color:"green", text:"assisti com calma e percebi que muita coisa que eu achava normal no meu dia talvez não seja tão normal assim"},
     {name:"@aline.b", color:"purple", member:true, text:"o que ele fala sobre as pequenas decisões do dia a dia fez muito sentido. nunca tinha parado pra pensar nisso desse jeito"},
-    {name:"@ewerttonbravo", color:"blue", member:true, avatar:"assets/aluno-ewertton.avif", text:"melhor decisão que tomei esse ano, sério"},
+    {name:"@rodrigo_fit", color:"blue", member:true, avatar:"assets/depo-clerinton.avif", text:"melhor decisão que tomei esse ano, sério"},
     {name:"@ju.oliveira", color:"green", text:"alguém mais começou hoje?? 🙋‍♀️"},
     {name:"@thiago.ramos", color:"gray", avatar:"assets/depo-emocionado.avif", text:"o passo 2 sozinho já valeu o investimento"},
     {name:"@bia_santos", color:"purple", member:true, avatar:"assets/depo-gabriela.avif", text:"eu tava super cética mas funcionou demais 😭"},
@@ -366,11 +371,17 @@ function memberBadge(){
 /* ---- viewers + chips ---- */
 $('#viewers').textContent = CONFIG.VIEWERS;
 const chipsEl = $('#chips');
-CONFIG.CHIPS.forEach(label=>{
-  const c=avColors[Math.floor((label.length*7)%avColors.length)];
+CONFIG.CHIPS.forEach(item=>{
+  const name = typeof item === 'string' ? item : item.name;
+  const av   = typeof item === 'string' ? null : item.avatar;
   const d=document.createElement('div');
   d.className='chip';
-  d.innerHTML=`<span class="av" style="background:${c};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">${label[0]}</span>${label}`;
+  if(av){
+    d.innerHTML=`<span class="av"><img src="${av}" alt="" loading="lazy"></span>${name}`;
+  } else {
+    const c=avColors[Math.floor((name.length*7)%avColors.length)];
+    d.innerHTML=`<span class="av" style="background:${c};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;">${name[0]}</span>${name}`;
+  }
   chipsEl.appendChild(d);
 });
 
