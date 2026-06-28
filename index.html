@@ -73,12 +73,20 @@ body{
 
 /* overlay tap-to-sound */
 #tap-sound{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:12px;cursor:pointer;
-  background:rgba(0,0,0,.45);color:#fff;text-align:center;}
-#tap-sound .ico{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);
-  display:flex;align-items:center;justify-content:center;}
-#tap-sound .ico svg{width:34px;height:34px;}
-#tap-sound p{margin:0;font-size:15px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+  align-items:center;justify-content:center;gap:16px;cursor:pointer;
+  background:rgba(0,0,0,.68);color:#fff;text-align:center;}
+#tap-sound .ico{width:84px;height:84px;border-radius:50%;background:var(--yt-red);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 0 rgba(255,0,0,.55);animation:tapPulse 1.4s ease-out infinite;}
+#tap-sound .ico svg{width:44px;height:44px;}
+@keyframes tapPulse{
+  0%{box-shadow:0 0 0 0 rgba(255,0,0,.55);transform:scale(1);}
+  70%{box-shadow:0 0 0 22px rgba(255,0,0,0);transform:scale(1.06);}
+  100%{box-shadow:0 0 0 0 rgba(255,0,0,0);transform:scale(1);}
+}
+#tap-sound p{margin:0;font-size:17px;font-weight:800;letter-spacing:.2px;
+  background:var(--yt-red);padding:11px 20px;border-radius:30px;
+  box-shadow:0 4px 14px rgba(0,0,0,.4);text-transform:uppercase;}
 #tap-sound.hide{display:none;}
 
 /* ---------- CHAT ---------- */
@@ -447,9 +455,8 @@ function nextMessage(){
   const d=CONFIG.CHAT.minDelay+Math.random()*(CONFIG.CHAT.maxDelay-CONFIG.CHAT.minDelay);
   setTimeout(nextMessage,d);
 }
-// seed inicial pra não começar vazio
-for(let i=0;i<6 && i<CONFIG.MESSAGES.length;i++) appendMessage(CONFIG.MESSAGES[msgIndex++]);
-setTimeout(nextMessage,1500);
+// chat começa limpo: 4s de silêncio pra atenção total no vídeo, depois flui
+setTimeout(nextMessage,4000);
 
 /* ---- super chat (gift memberships verde) ---- */
 let superShown=false;
